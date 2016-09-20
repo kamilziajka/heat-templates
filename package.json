@@ -3,5 +3,19 @@
   "version": "0.1.0",
   "description": "heat-templates",
   "author": "kazet",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack -p",
+    "build-dev": "webpack -d --watch"
+  },
+  "devDependencies": {
+    "babel-loader": "6.2.5",
+    "babel-preset-latest": "6.14.0",
+    "babel-preset-stage-0": "6.5.0",
+    "webpack": "1.13.2",
+    "webpack-node-externals": "1.4.3"
+  },
+  "dependencies": {
+    "js-yaml": "3.6.1"
+  }
 }
