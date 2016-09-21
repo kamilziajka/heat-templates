@@ -16,6 +16,7 @@
     "webpack-node-externals": "1.4.3"
   },
   "dependencies": {
-    "js-yaml": "3.6.1"
+    "js-yaml": "3.6.1",
+    "validate": "3.0.1"
   }
 }

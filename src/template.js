@@ -27,7 +27,7 @@ Template.prototype.toHeat = function () {
   heat.resources = components
     .map(component => component.getResources())
     .reduce((current, next) => current.concat(next), [])
-    .reduce((current, next) => ({...current, [next.name]: next}), {});
+    .reduce((current, next) => ({...current, ...next}), {});
 
   return heat;
 };
