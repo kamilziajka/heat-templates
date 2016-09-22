@@ -10,51 +10,57 @@ $ npm i heat-templates
 
 ## Usage
 
-Simple example:
+Simple *template.js*
 
 ```javascript
-const {Template, Server} = require('heat-templates');
+const {Template, Server, Volume} = require('heat-templates');
 
-const s1 = Server('server-one', {
+const server = Server('foo-server', {
   image: 'ubuntu',
   flavor: 'm1.small'
 });
 
-const s2 = Server('server-two', {
-  image: 'debian',
-  flavor: 'm1.medium',
-  zone: 'nova'
-});
+const volume = Volume('foo-volume', {size: 512});
+
+server.attachVolume(volume, '/dev/vdx');
 
 const version = '2015-04-30';
-const description = 'my heat template';
+const description = 'foo-template';
 
-Template(version, description)
-  .add(s1)
-  .add(s2)
-  .printYAML();
-
+Template(version, description).add(server).printYAML();
 ```
 
-Prints out:
+Run it
+
+```sh
+$ node template.js
+```
+
+Output
 
 ```yaml
 version: '2015-04-30'
-description: my heat template
+description: foo-template
 resources:
-  server-one:
+  foo-server:
     type: 'OS::Nova::Server'
     properties:
-      name: server-one
+      name: foo-server
       flavor: m1.small
       image: ubuntu
-  server-two:
-    type: 'OS::Nova::Server'
+  foo-volume:
+    type: 'OS::Cinder::Volume'
     properties:
-      name: server-two
-      flavor: m1.medium
-      image: debian
-      availability_zone: nova
+      name: foo-volume
+      size: 512
+  foo-volume-attachment:
+    type: 'OS::Cinder::VolumeAttachment'
+    properties:
+      volume_id:
+        get_resource: foo-volume
+      instance_id:
+        get_resource: foo-server
+      mountpoint: /dev/vdx
 ```
 
 ## License
