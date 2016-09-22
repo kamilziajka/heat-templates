@@ -26,7 +26,7 @@ Component.prototype.parseTemplate = function (template) {
   const {type} = template;
   const name = template.name(this);
 
-  return {[name]: {type, values}};
+  return {[name]: {type, properties: values}};
 };
 
 Component.prototype.flattenTree = function () {

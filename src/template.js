@@ -2,10 +2,14 @@
 
 import Yaml from 'js-yaml';
 
-const Template = function (
-  version = '2015-04-30',
-  description = ''
-) {
+const Template = function (...args) {
+  if (!(this instanceof Template)) {
+    return new Template(...args);
+  }
+
+  const version = args[0] || '2015-04-30';
+  const description = args[1];
+
   Object.assign(this, {version, description});
   this.components = [];
 };
@@ -21,7 +25,7 @@ Template.prototype.toHeat = function () {
   const heat = {version};
 
   if (description && description.length) {
-    template.description = description;
+    heat.description = description;
   }
 
   heat.resources = components
@@ -36,8 +40,18 @@ Template.prototype.toJSON = function () {
   return JSON.stringify(this.toHeat(), null, 2);
 };
 
+Template.prototype.printJSON = function () {
+  console.log(this.toJSON());
+  return this;
+};
+
 Template.prototype.toYAML = function () {
   return Yaml.dump(this.toHeat());
+};
+
+Template.prototype.printYAML = function () {
+  console.log(this.toYAML());
+  return this;
 };
 
 export default Template;

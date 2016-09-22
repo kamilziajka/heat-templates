@@ -3,6 +3,10 @@
 import Component from './component';
 
 const Server = function (...args) {
+  if (!(this instanceof Server)) {
+    return new Server(...args);
+  }
+  
   Component.call(this, ...args);
 };
 
