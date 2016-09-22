@@ -15,8 +15,23 @@ Server.prototype.templates = {
   properties: {
     name: {
       type: 'string',
-      required: 'true',
+      required: true,
       value: ({name}) => name
+    },
+    flavor: {
+      type: 'string',
+      required: true,
+      value: ({properties: {flavor}}) => flavor
+    },
+    image: {
+      type: 'string',
+      required: true,
+      value: ({properties: {image}}) => image
+    },
+    availability_zone: {
+      type: 'string',
+      required: false,
+      value: ({properties: {zone}}) => zone
     }
   }
 };

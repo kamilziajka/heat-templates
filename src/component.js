@@ -1,50 +1,67 @@
 'use strict';
 
 import Schema from 'validate';
+import {toPairs, mapValues, pick, pickBy} from 'lodash';
 
 const Component = function (name = '', properties = {}) {
-  Object.assign(this, {
-    dependencies: [],
-    name,
-    properties
-  });
+  Object.assign(this, {dependencies: [], name, properties});
 };
 
 Component.prototype.getResources = function () {
-  const {templates} = this;
+  const templates = [].concat(this.templates);
+  return templates.map(template => this.parseTemplate(template));
+};
 
-  return [].concat(templates).map((template) => {
-    const schema = {};
-    const properties = {};
+Component.prototype.parseTemplate = function (template) {
+  const {properties} = template;
 
-    Object
-      .keys(template.properties)
-      .forEach((key) => {
-        const {type, required, value: resolveValue} = template.properties[key];
+  const schema = Component.getSchema(properties);
+  const values = Component.getValues(properties, this);
+  const errors = schema.validate(values);
 
-        schema[key] = {type, required};
-        properties[key] = resolveValue(this);
-      });
+  if (errors.length) {
+    throw this.createError(`Incorrect param: ${errors[0].message}`);
+  }
 
-    const {name: resolveName, type} = template;
-    const name = resolveName(this);
-    const errors = Schema(schema).validate(properties);
+  const {type} = template;
+  const name = template.name(this);
 
-    if (errors.length) {
-      throw new Error(
-        `Incorrect parameter value for component ${name}: ` +
-        `${errors[0].message}.`
-      );
-    }
-
-    return {
-      [name]: {type, properties}
-    }
-  });
+  return {[name]: {type, values}};
 };
 
 Component.prototype.flattenTree = function () {
   return [this, ...this.dependencies];
+};
+
+Component.prototype.createError = (message) => {
+  return new Error(`component ${this} error: ${message}`);
+};
+
+Component.parseProperties = (reducer) => (properties) => {
+  const pairs = toPairs(properties);
+  return pairs.reduce(reducer, {});
+};
+
+Component.getSchema = (properties) => {
+  const keys = ['type', 'required', 'message', 'match'];
+
+  const reducer = (schema, [key, value]) => {
+    const params = pick(value, keys);
+    return {...schema, [key]: params};
+  };
+
+  return Schema(Component.parseProperties(reducer)(properties));
+};
+
+Component.getValues = (properties, component) => {
+  const reducer = (properties, [name, property]) => {
+    const {value} = property;
+    return {...properties, [name]: value};
+  };
+
+  const resolvers = Component.parseProperties(reducer)(properties);
+  const values = mapValues(resolvers, resolver => resolver(component));
+  return pickBy(values, value => !!value);
 };
 
 export default Component;
