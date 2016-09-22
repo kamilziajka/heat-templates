@@ -2,13 +2,18 @@
   "name": "heat-templates",
   "version": "0.1.0",
   "description": "heat-templates",
+  "main": "lib/index.js",
   "author": "kazet",
   "license": "MIT",
   "scripts": {
     "build": "webpack -p",
-    "build-dev": "webpack -d --watch"
+    "build-dev": "webpack -d --watch",
+    "compile": "babel src -d lib",
+    "compile-dev": "babel src -d lib -w",
+    "test": "npm run build && npm run compile"
   },
   "devDependencies": {
+    "babel-cli": "6.14.0",
     "babel-loader": "6.2.5",
     "babel-preset-latest": "6.14.0",
     "babel-preset-stage-0": "6.5.0",
