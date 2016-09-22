@@ -7,8 +7,17 @@ const Component = function (name = '', properties = {}) {
   Object.assign(this, {dependencies: [], name, properties});
 };
 
+Component.prototype.addDependencies = function (...args) {
+  this.dependencies.push(...args);
+  return this;
+};
+
+Component.prototype.getTemplates = function () {
+  return [];
+};
+
 Component.prototype.getResources = function () {
-  const templates = [].concat(this.templates);
+  const templates = [].concat(this.getTemplates());
   return templates.map(template => this.parseTemplate(template));
 };
 
@@ -34,7 +43,7 @@ Component.prototype.flattenTree = function () {
 };
 
 Component.prototype.createError = (message) => {
-  return new Error(`component ${this} error: ${message}`);
+  return new Error(`component ${this.name} error: ${message}`);
 };
 
 Component.parseProperties = (reducer) => (properties) => {
@@ -50,7 +59,9 @@ Component.getSchema = (properties) => {
     return {...schema, [key]: params};
   };
 
-  return Schema(Component.parseProperties(reducer)(properties));
+  const options = {strip: false};
+
+  return Schema(Component.parseProperties(reducer)(properties), options);
 };
 
 Component.getValues = (properties, component) => {

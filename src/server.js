@@ -1,6 +1,7 @@
 'use strict';
 
 import Component from './component';
+import VolumeAttachment from './volume-attachment';
 
 const Server = function (...args) {
   if (!(this instanceof Server)) {
@@ -13,7 +14,21 @@ const Server = function (...args) {
 Server.prototype = Object.create(Component.prototype);
 Server.prototype.constructor = Server;
 
-Server.prototype.templates = {
+Server.prototype.attachVolume = function (volume, mountPoint) {
+  const name = `${volume.name}-attachment`;
+
+  const properties = {
+    server: this,
+    volume,
+    mountPoint
+  };
+
+  const volumeAttachment = VolumeAttachment(name, properties);
+
+  this.addDependencies(volume, volumeAttachment);
+};
+
+Server.prototype.getTemplates = () => ({
   name: ({name}) => name,
   type: 'OS::Nova::Server',
   properties: {
@@ -38,6 +53,6 @@ Server.prototype.templates = {
       value: ({properties: {zone}}) => zone
     }
   }
-};
+});
 
 export default Server;

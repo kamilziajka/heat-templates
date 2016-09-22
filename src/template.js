@@ -14,8 +14,8 @@ const Template = function (...args) {
   this.components = [];
 };
 
-Template.prototype.add = function (component) {
-  this.components.push(component);
+Template.prototype.add = function (...args) {
+  this.components.push(...args);
   return this;
 };
 
@@ -29,6 +29,8 @@ Template.prototype.toHeat = function () {
   }
 
   heat.resources = components
+    .map(component => component.flattenTree())
+    .reduce((current, next) => current.concat(next), [])
     .map(component => component.getResources())
     .reduce((current, next) => current.concat(next), [])
     .reduce((current, next) => ({...current, ...next}), {});
