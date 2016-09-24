@@ -1,78 +1,74 @@
 'use strict';
 
-import Schema from 'validate';
-import {toPairs, mapValues, pick, pickBy} from 'lodash';
+import Schema from 'schema-js';
+import {getPrototypeChain} from './util';
 
-const Component = function (name = '', properties = {}) {
-  Object.assign(this, {dependencies: [], name, properties});
-};
-
-Component.prototype.addDependencies = function (...args) {
-  this.dependencies.push(...args);
-  return this;
-};
-
-Component.prototype.getTemplates = function () {
-  return [];
+const Component = function (properties) {
+  Object.assign(this, {
+    dependencies: [],
+    properties
+  });
 };
 
 Component.prototype.getResources = function () {
-  const templates = [].concat(this.getTemplates());
-  return templates.map(template => this.parseTemplate(template));
+  const {name} = this.properties;
+  return {[name]: {}};
 };
 
-Component.prototype.parseTemplate = function (template) {
-  const {properties} = template;
+Component.prototype.getSchema = function () {
+  return {
+    name: {
+      type: String,
+      required: true
+    }
+  };
+};
 
-  const schema = Component.getSchema(properties);
-  const values = Component.getValues(properties, this);
-  const errors = schema.validate(values);
+Component.prototype.getMergedSchema = function () {
+  const prototypes = getPrototypeChain(this);
 
-  if (errors.length) {
-    throw this.createError(`Incorrect param: ${errors[0].message}`);
-  }
+  const schema = prototypes
+    .map(prototype => this::prototype.getSchema())
+    .reduce((current, next) => Object.assign(current, next));
 
-  const {type} = template;
-  const name = template.name(this);
+  return new Schema(schema);
+};
 
-  return {[name]: {type, properties: values}};
+Component.prototype.validateProperties = function () {
+  const schema = this.getMergedSchema();
+  schema.validate(this.properties);
 };
 
 Component.prototype.flattenTree = function () {
-  return [this, ...this.dependencies];
+  const {dependencies} = this;
+
+  const components = dependencies
+    .map(component => component.flattenTree())
+    .reduce((current, next) => [...current, ...next], []);
+
+  return [this, ...components];
 };
 
-Component.prototype.createError = (message) => {
-  return new Error(`component ${this.name} error: ${message}`);
+Component.prototype.compose = function () {
+  const components = this.flattenTree();
+
+  components.forEach((component) => {
+    component.validateProperties();
+  });
+
+  const resources = components
+    .map(component => component.getResources())
+    .reduce((current, next) => Object.assign(current, next), {});
+
+  return resources;
 };
 
-Component.parseProperties = (reducer) => (properties) => {
-  const pairs = toPairs(properties);
-  return pairs.reduce(reducer, {});
-};
+Component.createResourceResolver = (component) => ({
+  get_resource: component.properties.name
+});
 
-Component.getSchema = (properties) => {
-  const keys = ['type', 'required', 'message', 'match'];
-
-  const reducer = (schema, [key, value]) => {
-    const params = pick(value, keys);
-    return {...schema, [key]: params};
-  };
-
-  const options = {strip: false};
-
-  return Schema(Component.parseProperties(reducer)(properties), options);
-};
-
-Component.getValues = (properties, component) => {
-  const reducer = (properties, [name, property]) => {
-    const {value} = property;
-    return {...properties, [name]: value};
-  };
-
-  const resolvers = Component.parseProperties(reducer)(properties);
-  const values = mapValues(resolvers, resolver => resolver(component));
-  return pickBy(values, value => !!value);
-};
+Component.createParameterResolver = (parameter) => ({
+  get_param: parameter
+});
 
 export default Component;

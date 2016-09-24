@@ -2,37 +2,35 @@
 
 import Component from './component';
 
-const Volume = function (...args) {
+const Volume = function (properties) {
   if (!(this instanceof Volume)) {
-    return new Volume(...args);
+    return new Volume(properties);
   }
 
-  Component.call(this, ...args);
+  Component.call(this, properties);
 };
 
 Volume.prototype = Object.create(Component.prototype);
 Volume.prototype.constructor = Volume;
 
-Volume.prototype.getTemplates = () => ({
-  name: ({name}) => name,
-  type: 'OS::Cinder::Volume',
-  properties: {
-    name: {
-      type: 'string',
-      required: true,
-      value: ({name}) => name
-    },
-    availability_zone: {
-      type: 'string',
-      required: false,
-      value: ({properties: {zone}}) => zone
-    },
+Volume.prototype.getSchema = function () {
+  return {
     size: {
-      type: 'number',
-      required: true,
-      value: ({properties: {size}}) => size
+      type: Number,
+      required: true
     }
-  }
-});
+  };
+};
+
+Volume.prototype.getResources = function () {
+  const {name, size} = this.properties;
+
+  const resource = {
+    type: 'OS::Cinder::Volume',
+    properties: {size}
+  };
+
+  return {[name]: resource};
+};
 
 export default Volume;
