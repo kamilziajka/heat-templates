@@ -67,5 +67,11 @@ resources:
       size: 512
 ```
 
+## Components
+
+The currently available components are [Server](src/server.js), [Volume](src/volume.js) and [VolumeAttachment](src/volume-attachment.js).
+  
+All components inherit from base [Component](src/component.js) and their constructors take parameters map object as the first argument. Parameter schema can be found in their _getSchema_ method.  
+
 ## License
 [MIT](license.md)
