@@ -27,7 +27,7 @@ Volume.prototype.getResources = function () {
 
   const resource = {
     type: 'OS::Cinder::Volume',
-    properties: {size}
+    properties: {name, size}
   };
 
   return {[name]: resource};

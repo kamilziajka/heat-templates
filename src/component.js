@@ -6,6 +6,7 @@ import {getPrototypeChain} from './util';
 const Component = function (properties) {
   Object.assign(this, {
     dependencies: [],
+    uid: `${Math.random().toString(36).substr(2, 5)}-${Date.now()}`,
     properties
   });
 };
@@ -39,11 +40,21 @@ Component.prototype.validateProperties = function () {
   schema.validate(this.properties);
 };
 
-Component.prototype.flattenTree = function () {
-  const {dependencies} = this;
+Component.prototype.getDependencies = function () {
+  return this.dependencies;
+};
 
-  const components = dependencies
-    .map(component => component.flattenTree())
+Component.prototype.flattenTree = function (visited = new Set()) {
+  const {uid} = this;
+
+  if (visited.has(uid)) {
+    return [];
+  }
+
+  visited.add(uid);
+
+  const components = this.getDependencies()
+    .map(component => component.flattenTree(visited))
     .reduce((current, next) => [...current, ...next], []);
 
   return [this, ...components];

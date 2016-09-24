@@ -15,6 +15,11 @@ const VolumeAttachment = function (properties) {
 VolumeAttachment.prototype = Object.create(Component.prototype);
 VolumeAttachment.prototype.constructor = VolumeAttachment;
 
+VolumeAttachment.prototype.getDependencies = function () {
+  const {volume, server} = this.properties;
+  return [volume, server];
+};
+
 VolumeAttachment.prototype.getSchema = function () {
   return {
     mountPoint: {

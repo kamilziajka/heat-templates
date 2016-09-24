@@ -22,18 +22,17 @@ Template.prototype.add = function (...args) {
 Template.prototype.toHeat = function () {
   const {version, description, components} = this;
 
-  const heat = {version};
+  const heat = {
+    heat_template_version: version
+  };
 
   if (description && description.length) {
     heat.description = description;
   }
 
   heat.resources = components
-    .map(component => component.flattenTree())
-    .reduce((current, next) => current.concat(next), [])
-    .map(component => component.getResources())
-    .reduce((current, next) => current.concat(next), [])
-    .reduce((current, next) => ({...current, ...next}), {});
+    .map(component => component.compose())
+    .reduce((current, next) => Object.assign(current, next));
 
   return heat;
 };

@@ -15,12 +15,16 @@ Simple *template.js*
 ```javascript
 const {Template, Server, Volume} = require('heat-templates');
 
-const server = Server('foo-server', {
+const server = Server({
+  name: 'foo-server',
   image: 'ubuntu',
   flavor: 'm1.small'
 });
 
-const volume = Volume('foo-volume', {size: 512});
+const volume = Volume({
+  name: 'foo-volume',
+  size: 512
+});
 
 server.attachVolume(volume, '/dev/vdx');
 
@@ -39,7 +43,7 @@ $ node template.js
 Output
 
 ```yaml
-version: '2015-04-30'
+heat_template_version: '2015-04-30'
 description: foo-template
 resources:
   foo-server:
@@ -48,19 +52,19 @@ resources:
       name: foo-server
       flavor: m1.small
       image: ubuntu
-  foo-volume:
-    type: 'OS::Cinder::Volume'
-    properties:
-      name: foo-volume
-      size: 512
   foo-volume-attachment:
     type: 'OS::Cinder::VolumeAttachment'
     properties:
       volume_id:
         get_resource: foo-volume
-      instance_id:
+      instance_uuid:
         get_resource: foo-server
       mountpoint: /dev/vdx
+  foo-volume:
+    type: 'OS::Cinder::Volume'
+    properties:
+      name: foo-volume
+      size: 512
 ```
 
 ## License
