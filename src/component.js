@@ -44,6 +44,10 @@ Component.prototype.getDependencies = function () {
   return this.dependencies;
 };
 
+Component.prototype.getId = function () {
+  return this.properties.name;
+};
+
 Component.prototype.flattenTree = function (visited = new Set()) {
   const {uid} = this;
 
@@ -73,13 +77,5 @@ Component.prototype.compose = function () {
 
   return resources;
 };
-
-Component.createResourceResolver = (component) => ({
-  get_resource: component.properties.name
-});
-
-Component.createParameterResolver = (parameter) => ({
-  get_param: parameter
-});
 
 export default Component;

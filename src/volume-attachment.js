@@ -16,8 +16,11 @@ VolumeAttachment.prototype = Object.create(Component.prototype);
 VolumeAttachment.prototype.constructor = VolumeAttachment;
 
 VolumeAttachment.prototype.getDependencies = function () {
-  const {volume, server} = this.properties;
-  return [volume, server];
+  return [
+    ...this.dependencies,
+    this.properties.volume,
+    this.properties.server
+  ];
 };
 
 VolumeAttachment.prototype.getSchema = function () {
@@ -43,8 +46,8 @@ VolumeAttachment.prototype.getResources = function () {
   const resource = {
     type: 'OS::Cinder::VolumeAttachment',
     properties: {
-      volume_id: Component.createResourceResolver(volume),
-      instance_uuid: Component.createResourceResolver(server),
+      volume_id: volume.getId(),
+      instance_uuid: server.getId(),
       mountpoint: mountPoint
     }
   };
