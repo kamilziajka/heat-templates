@@ -75,6 +75,7 @@ const port = new Port({
   name: 'foo-port',
   networkId: 'foo-network-id',
   subnetId: 'foo-subnet-id',
+  securityGroups: ['foo-security-group']
 });
 
 server.attachPort(port);
@@ -126,6 +127,8 @@ resources:
       network_id: foo-network-id
       fixed_ips:
         - subnet_id: foo-subnet-id
+      security_groups:
+        - foo-security-group
   foo-floating-ip:
     type: 'OS::Neutron::FloatingIP'
     properties:
