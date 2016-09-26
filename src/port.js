@@ -37,7 +37,7 @@ Port.prototype.getSchema = function () {
 
 Port.prototype.getResources = function () {
   const {
-    name, networkId,
+    id, networkId,
     subnetId, securityGroups
   } = this.properties;
 
@@ -50,7 +50,7 @@ Port.prototype.getResources = function () {
     }
   };
 
-  return {[name]: resource};
+  return {[id]: resource};
 };
 
 export default Port;

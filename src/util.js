@@ -7,3 +7,7 @@ export const getPrototypeChain = (obj) => {
     [prototype, ...getPrototypeChain(prototype)] :
     [];
 };
+
+export const isString = (obj) => {
+  return typeof obj == 'string' || obj instanceof String;
+};

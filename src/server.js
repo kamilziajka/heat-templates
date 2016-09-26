@@ -3,6 +3,7 @@
 import Component from './component';
 import VolumeAttachment from './volume-attachment';
 import Port from './port';
+import {isString} from './util';
 
 const Server = function (properties) {
   if (!(this instanceof Server)) {
@@ -27,7 +28,7 @@ Server.prototype.getDependencies = function () {
 
 Server.prototype.attachVolume = function (volume, mountPoint) {
   const attachment = new VolumeAttachment({
-    name: `${volume.properties.name}-attachment`,
+    id: `${isString(volume) ? volume : volume.properties.id}-attachment`,
     server: this,
     volume,
     mountPoint
@@ -47,6 +48,9 @@ Server.prototype.getSchema = function () {
     zone: {
       type: String
     },
+    name: {
+      type: String
+    },
     image: {
       type: String,
       required: true
@@ -61,7 +65,7 @@ Server.prototype.getSchema = function () {
     ports: {
       type: Array,
       items: {
-        type: Port
+        type: [String, Port]
       }
     }
   };
@@ -69,25 +73,29 @@ Server.prototype.getSchema = function () {
 
 Server.prototype.getResources = function () {
   const {
-    name, zone, flavor,
+    id, zone, name, flavor,
     keyPair, image, ports
   } = this.properties;
 
-  const properties = {name, flavor, image};
+  const properties = {
+    name: name || id,
+    flavor,
+    image
+  };
+
+  const networks = ports.map(port => ({
+    port: Component.resolve(port)
+  }));
 
   Object.assign(
     properties,
     zone ? {zone} : {},
     keyPair ? {key_name: keyPair} : {},
-    !ports.length ? {} : {
-      networks: ports.map((port) => ({
-        port: Component.createResourceResolver(port)
-      }))
-    }
+    networks.length ? {networks} : {}
   );
 
   return {
-    [name]: {
+    [id]: {
       type: 'OS::Nova::Server',
       properties
     }

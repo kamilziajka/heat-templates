@@ -1,24 +1,25 @@
 'use strict';
 
 import Schema from 'schema-js';
-import {getPrototypeChain} from './util';
+import {getPrototypeChain, isString} from './util';
 
 const Component = function (properties) {
+  const uid = `${Math.random().toString(36).substr(2, 5)}-${Date.now()}`;
+
   Object.assign(this, {
     dependencies: [],
-    uid: `${Math.random().toString(36).substr(2, 5)}-${Date.now()}`,
+    uid,
     properties
   });
 };
 
 Component.prototype.getResources = function () {
-  const {name} = this.properties;
-  return {[name]: {}};
+  return {};
 };
 
 Component.prototype.getSchema = function () {
   return {
-    name: {
+    id: {
       type: String,
       required: true
     }
@@ -44,10 +45,6 @@ Component.prototype.getDependencies = function () {
   return this.dependencies;
 };
 
-Component.prototype.getId = function () {
-  return this.properties.name;
-};
-
 Component.prototype.flattenTree = function (visited = new Set()) {
   const {uid} = this;
 
@@ -58,6 +55,7 @@ Component.prototype.flattenTree = function (visited = new Set()) {
   visited.add(uid);
 
   const components = this.getDependencies()
+    .filter(component => !isString(component))
     .map(component => component.flattenTree(visited))
     .reduce((current, next) => [...current, ...next], []);
 
@@ -78,8 +76,10 @@ Component.prototype.compose = function () {
   return resources;
 };
 
-Component.createResourceResolver = (component) => ({
-  get_resource: component.getId()
-});
+Component.resolve = function (component) {
+  return isString(component) ? component : {
+    get_resource: component.properties.id
+  };
+};
 
 export default Component;

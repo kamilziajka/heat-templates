@@ -1,1 +1,4 @@
 .idea
+.babelrc
+.editorconfig
+webpack.config.babel.js

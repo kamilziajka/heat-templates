@@ -15,6 +15,9 @@ Volume.prototype.constructor = Volume;
 
 Volume.prototype.getSchema = function () {
   return {
+    name: {
+      type: String
+    },
     size: {
       type: Number,
       required: true
@@ -23,14 +26,17 @@ Volume.prototype.getSchema = function () {
 };
 
 Volume.prototype.getResources = function () {
-  const {name, size} = this.properties;
+  const {id, name, size} = this.properties;
 
   const resource = {
     type: 'OS::Cinder::Volume',
-    properties: {name, size}
+    properties: {
+      name: name || id,
+      size
+    }
   };
 
-  return {[name]: resource};
+  return {[id]: resource};
 };
 
 export default Volume;

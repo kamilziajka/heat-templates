@@ -30,29 +30,32 @@ VolumeAttachment.prototype.getSchema = function () {
       required: true
     },
     volume: {
-      type: Volume,
+      type: [String, Volume],
       required: true
     },
     server: {
-      type: Server,
+      type: [String, Server],
       required: true
     }
   };
 };
 
 VolumeAttachment.prototype.getResources = function () {
-  const {name, volume, server, mountPoint} = this.properties;
+  const {
+    id, volume,
+    server, mountPoint
+  } = this.properties;
 
   const resource = {
     type: 'OS::Cinder::VolumeAttachment',
     properties: {
-      volume_id: Component.createResourceResolver(volume),
-      instance_uuid: Component.createResourceResolver(server),
+      volume_id: Component.resolve(volume),
+      instance_uuid: Component.resolve(server),
       mountpoint: mountPoint
     }
   };
 
-  return {[name]: resource};
+  return {[id]: resource};
 };
 
 export default VolumeAttachment;

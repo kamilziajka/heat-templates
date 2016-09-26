@@ -28,24 +28,24 @@ FloatingIP.prototype.getSchema = function () {
       required: true
     },
     port: {
-      type: Port,
+      type: [String, Port],
       required: true
     }
   };
 };
 
 FloatingIP.prototype.getResources = function () {
-  const {name, networkId, port} = this.properties;
+  const {id, networkId, port} = this.properties;
 
   const resource = {
     type: 'OS::Neutron::FloatingIP',
     properties: {
       floating_network_id: networkId,
-      port_id: Component.createResourceResolver(port)
+      port_id: Component.resolve(port)
     }
   };
 
-  return {[name]: resource};
+  return {[id]: resource};
 };
 
 export default FloatingIP;
