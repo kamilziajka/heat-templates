@@ -55,6 +55,9 @@ Server.prototype.getSchema = function () {
       type: String,
       required: true
     },
+    keyPair: {
+      type: String
+    },
     ports: {
       type: Array,
       items: {
@@ -65,17 +68,23 @@ Server.prototype.getSchema = function () {
 };
 
 Server.prototype.getResources = function () {
-  const {name, zone, flavor, image, ports} = this.properties;
+  const {
+    name, zone, flavor,
+    keyPair, image, ports
+  } = this.properties;
 
   const properties = {name, flavor, image};
 
-  Object.assign(properties, zone ? {zone} : {});
-
-  Object.assign(properties, !ports.length ? {} : {
-    networks: ports.map((port) => ({
-      port: Component.createResourceResolver(port)
-    }))
-  });
+  Object.assign(
+    properties,
+    zone ? {zone} : {},
+    keyPair ? {key_name: keyPair} : {},
+    !ports.length ? {} : {
+      networks: ports.map((port) => ({
+        port: Component.createResourceResolver(port)
+      }))
+    }
+  );
 
   return {
     [name]: {

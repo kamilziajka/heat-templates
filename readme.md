@@ -60,7 +60,8 @@ const template = new Template(version, description);
 const server = new Server({
   name: 'foo-server',
   image: 'ubuntu',
-  flavor: 'm1.small'
+  flavor: 'm1.small',
+  keyPair: 'foo-key-pair'
 });
 
 const volume = new Volume({
@@ -102,6 +103,7 @@ resources:
       name: foo-server
       flavor: m1.small
       image: ubuntu
+      key_name: foo-key-pair
       networks:
         - port:
             get_resource: foo-port
