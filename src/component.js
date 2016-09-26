@@ -78,4 +78,8 @@ Component.prototype.compose = function () {
   return resources;
 };
 
+Component.createResourceResolver = (component) => ({
+  get_resource: component.getId()
+});
+
 export default Component;

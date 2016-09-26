@@ -103,12 +103,15 @@ resources:
       flavor: m1.small
       image: ubuntu
       networks:
-        - port: foo-port
+        - port:
+            get_resource: foo-port
   foo-volume-attachment:
     type: 'OS::Cinder::VolumeAttachment'
     properties:
-      volume_id: foo-volume
-      instance_uuid: foo-server
+      volume_id:
+        get_resource: foo-volume
+      instance_uuid:
+        get_resource: foo-server
       mountpoint: /dev/vdx
   foo-volume:
     type: 'OS::Cinder::Volume'
@@ -125,7 +128,8 @@ resources:
     type: 'OS::Neutron::FloatingIP'
     properties:
       floating_network_id: foo-public-network-id
-      port_id: foo-port
+      port_id:
+        get_resource: foo-port
 ```
 
 ## Components

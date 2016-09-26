@@ -46,8 +46,8 @@ VolumeAttachment.prototype.getResources = function () {
   const resource = {
     type: 'OS::Cinder::VolumeAttachment',
     properties: {
-      volume_id: volume.getId(),
-      instance_uuid: server.getId(),
+      volume_id: Component.createResourceResolver(volume),
+      instance_uuid: Component.createResourceResolver(server),
       mountpoint: mountPoint
     }
   };

@@ -72,7 +72,9 @@ Server.prototype.getResources = function () {
   Object.assign(properties, zone ? {zone} : {});
 
   Object.assign(properties, !ports.length ? {} : {
-    networks: ports.map((port) => ({port: port.getId()}))
+    networks: ports.map((port) => ({
+      port: Component.createResourceResolver(port)
+    }))
   });
 
   return {

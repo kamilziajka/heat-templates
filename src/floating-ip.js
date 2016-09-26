@@ -41,7 +41,7 @@ FloatingIP.prototype.getResources = function () {
     type: 'OS::Neutron::FloatingIP',
     properties: {
       floating_network_id: networkId,
-      port_id: port.getId()
+      port_id: Component.createResourceResolver(port)
     }
   };
 
