@@ -7,11 +7,11 @@ const Template = function (...args) {
     return new Template(...args);
   }
 
-  const version = args[0] || '2015-04-30';
-  const description = args[1];
-
-  Object.assign(this, {version, description});
-  this.components = [];
+  Object.assign(this, {
+    components: [],
+    version: args[0] || '2015-04-30',
+    description: args[1]
+  });
 };
 
 Template.prototype.add = function (...args) {

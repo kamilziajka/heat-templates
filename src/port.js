@@ -41,16 +41,22 @@ Port.prototype.getResources = function () {
     subnetId, securityGroups
   } = this.properties;
 
-  const resource = {
-    type: 'OS::Neutron::Port',
-    properties: {
-      network_id: networkId,
-      fixed_ips: [{subnet_id: subnetId}],
-      security_groups: securityGroups
-    }
+  const properties = {
+    network_id: networkId,
+    fixed_ips: [{subnet_id: subnetId}]
   };
 
-  return {[id]: resource};
+  Object.assign(
+    properties,
+    securityGroups.length ? {security_groups: securityGroups} : {}
+  );
+
+  return {
+    [id]: {
+      type: 'OS::Neutron::Port',
+      properties
+    }
+  };
 };
 
 export default Port;

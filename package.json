@@ -5,6 +5,9 @@
   "main": "lib/index.js",
   "author": "kazet",
   "license": "MIT",
+  "engines": {
+    "node" : ">=0.8"
+  },
   "scripts": {
     "build": "babel src -d ./lib",
     "build-dev": "babel src -d ./lib -w",
@@ -13,7 +16,6 @@
   },
   "devDependencies": {
     "babel-cli": "6.14.0",
-    "babel-loader": "6.2.5",
     "babel-preset-latest": "6.14.0",
     "babel-preset-stage-0": "6.5.0",
     "rimraf": "2.5.4"
