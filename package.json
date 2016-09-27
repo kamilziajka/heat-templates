@@ -2,20 +2,34 @@
   "name": "heat-templates",
   "version": "0.1.0",
   "description": "heat-templates",
+  "main": "lib/index.js",
   "author": "kazet",
   "license": "MIT",
+  "engines": {
+    "node" : ">=0.8"
+  },
   "scripts": {
-    "build": "webpack -p",
-    "build-dev": "webpack -d --watch"
+    "build": "babel src -d ./lib",
+    "build-dev": "babel src -d ./lib -w",
+    "clean": "rimraf ./lib",
+    "prepublish": "npm run clean && npm run build"
   },
   "devDependencies": {
-    "babel-loader": "6.2.5",
+    "babel-cli": "6.14.0",
     "babel-preset-latest": "6.14.0",
     "babel-preset-stage-0": "6.5.0",
-    "webpack": "1.13.2",
-    "webpack-node-externals": "1.4.3"
+    "rimraf": "2.5.4"
   },
   "dependencies": {
-    "js-yaml": "3.6.1"
-  }
+    "js-yaml": "3.6.1",
+    "schema-js": "1.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kazet15/heat-templates.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kazet15/heat-templates/issues"
+  },
+  "homepage": "https://github.com/kazet15/heat-templates#readme"
 }
