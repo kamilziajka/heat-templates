@@ -1,6 +1,6 @@
 {
   "name": "heat-templates",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "heat-templates",
   "main": "lib/index.js",
   "author": "kazet",
@@ -8,6 +8,9 @@
   "engines": {
     "node" : ">=0.8"
   },
+  "keywords": [
+    "openstack", "heat", "templates", "yaml"
+  ],
   "scripts": {
     "build": "babel src -d ./lib",
     "build-dev": "babel src -d ./lib -w",
