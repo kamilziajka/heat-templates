@@ -55,45 +55,38 @@ const {Template, Server, Volume, Port, FloatingIP} = require('heat-templates');
 const version = '2015-04-30';
 const description = 'foo-template';
 
-const template = new Template(version, description);
+const template = Template(version, description);
 
-const server = new Server({
+const server = Server({
   id: 'foo-server',
   image: 'debian',
   flavor: 'm1.medium',
   keyPair: 'foo-key-pair'
 });
 
-const newVolume = new Volume({
-  id: 'foo-new-volume',
+const volume = Volume({
+  id: 'foo-volume',
   name: 'bar-volume',
   size: 512
 });
 
-const existingVolume = 'foo-existing-volume-id-12345';
-
-const port = new Port({
+const port = Port({
   id: 'foo-port',
-  networkId: 'foo-network-id',
-  subnetId: 'foo-subnet-id',
+  network: 'foo-network',
+  subnetwork: 'foo-subnetwork',
   securityGroups: ['foo-security-group']
 });
 
-server
-  .attachVolume(newVolume, '/dev/vdi')
-  .attachVolume(existingVolume, '/dev/vdj')
-  .attachPort(port);
-
-const floatingIP = new FloatingIP({
+const floatingIP = FloatingIP({
   id: 'foo-floating-ip',
-  networkId: 'foo-public-network-id',
-  port
+  network: 'foo-public-network'
 });
 
-template
-  .add(server)
-  .add(floatingIP)
-  .printYAML();
+port.attachFloatingIP(floatingIP);
+
+server.attachVolume(volume, '/dev/vdi').attachPort(port);
+
+template.add(server).printYAML();
 ```
 
 Output
@@ -112,40 +105,33 @@ resources:
       networks:
         - port:
             get_resource: foo-port
-  foo-new-volume-attachment:
+  foo-volume-attachment:
     type: 'OS::Cinder::VolumeAttachment'
     properties:
       volume_id:
-        get_resource: foo-new-volume
+        get_resource: foo-volume
       instance_uuid:
         get_resource: foo-server
       mountpoint: /dev/vdi
-  foo-new-volume:
+  foo-volume:
     type: 'OS::Cinder::Volume'
     properties:
       name: bar-volume
       size: 512
-  foo-existing-volume-id-12345-attachment:
-    type: 'OS::Cinder::VolumeAttachment'
-    properties:
-      volume_id: foo-existing-volume-id-12345
-      instance_uuid:
-        get_resource: foo-server
-      mountpoint: /dev/vdj
   foo-port:
     type: 'OS::Neutron::Port'
     properties:
-      network_id: foo-network-id
-      fixed_ips:
-        - subnet_id: foo-subnet-id
       security_groups:
         - foo-security-group
+      network: foo-network
+      fixed_ips:
+        - subnet: foo-subnetwork
   foo-floating-ip:
     type: 'OS::Neutron::FloatingIP'
     properties:
-      floating_network_id: foo-public-network-id
       port_id:
         get_resource: foo-port
+      floating_network: foo-public-network
 ```
 
 ## Components

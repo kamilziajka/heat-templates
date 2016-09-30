@@ -1,6 +1,8 @@
 'use strict';
 
+import Schema from 'schema-js';
 import Component from './component';
+import FloatingIP from './floating-ip';
 
 const Port = function (properties) {
   if (!(this instanceof Port)) {
@@ -16,13 +18,21 @@ const Port = function (properties) {
 Port.prototype = Object.create(Component.prototype);
 Port.prototype.constructor = Port;
 
+Port.prototype.attachFloatingIP = function (floatingIP) {
+  if (floatingIP instanceof FloatingIP) {
+    floatingIP.properties.port = this;
+    this.dependencies.push(floatingIP);
+  }
+  return this;
+};
+
 Port.prototype.getSchema = function () {
   return {
-    networkId: {
+    network: {
       type: String,
       required: true
     },
-    subnetId: {
+    subnetwork: {
       type: String,
       required: true
     },
@@ -36,14 +46,11 @@ Port.prototype.getSchema = function () {
 };
 
 Port.prototype.getResources = function () {
-  const {
-    id, networkId,
-    subnetId, securityGroups
-  } = this.properties;
+  const {id, network, subnetwork, securityGroups} = this.properties;
 
   const properties = {
-    network_id: networkId,
-    fixed_ips: [{subnet_id: subnetId}]
+    network,
+    fixed_ips: [{subnet: subnetwork}]
   };
 
   Object.assign(

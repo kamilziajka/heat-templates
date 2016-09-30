@@ -46,12 +46,12 @@ Template.prototype.printJSON = function () {
   return this;
 };
 
-Template.prototype.toYAML = function () {
-  return Yaml.dump(this.toHeat());
+Template.prototype.toYAML = function (options = {}) {
+  return Yaml.dump(this.toHeat(), options);
 };
 
-Template.prototype.printYAML = function () {
-  console.log(this.toYAML());
+Template.prototype.printYAML = function (options = {}) {
+  console.log(this.toYAML(options));
   return this;
 };
 

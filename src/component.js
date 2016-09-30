@@ -18,22 +18,21 @@ Component.prototype.getResources = function () {
 };
 
 Component.prototype.getSchema = function () {
-  return {
+  return new Schema({
     id: {
       type: String,
       required: true
     }
-  };
+  });
 };
 
 Component.prototype.getMergedSchema = function () {
   const prototypes = getPrototypeChain(this);
 
-  const schema = prototypes
+  return prototypes
     .map(prototype => this::prototype.getSchema())
-    .reduce((current, next) => Object.assign(current, next));
-
-  return new Schema(schema);
+    .reverse()
+    .reduce((current, next) => current.extend(next));
 };
 
 Component.prototype.validateProperties = function () {
