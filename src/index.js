@@ -1,19 +1,27 @@
 'use strict';
 
 import Component from './component';
-import Template from './template';
+import FloatingIP from './floating-ip';
+import Network from './network';
+import Port from './port';
+import Router from './router';
+import RouterInterface from './router-interface';
 import Server from './server';
+import Subnetwork from './subnetwork';
+import Template from './template';
 import Volume from './volume';
 import VolumeAttachment from './volume-attachment';
-import Port from './port';
-import FloatingIP from './floating-ip';
 
 export {
   Component,
-  Template,
-  Server,
-  Volume,
-  VolumeAttachment,
+  FloatingIP,
+  Network,
   Port,
-  FloatingIP
+  Router,
+  RouterInterface,
+  Server,
+  Subnetwork,
+  Template,
+  Volume,
+  VolumeAttachment
 };

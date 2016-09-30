@@ -18,22 +18,21 @@ Component.prototype.getResources = function () {
 };
 
 Component.prototype.getSchema = function () {
-  return {
+  return new Schema({
     id: {
       type: String,
       required: true
     }
-  };
+  });
 };
 
 Component.prototype.getMergedSchema = function () {
   const prototypes = getPrototypeChain(this);
 
-  const schema = prototypes
+  return prototypes
     .map(prototype => this::prototype.getSchema())
-    .reduce((current, next) => Object.assign(current, next));
-
-  return new Schema(schema);
+    .reverse()
+    .reduce((current, next) => current.extend(next));
 };
 
 Component.prototype.validateProperties = function () {
@@ -53,6 +52,7 @@ Component.prototype.flattenTree = function (visited = new Set()) {
   }
 
   visited.add(uid);
+  this.validateProperties();
 
   const components = this.getDependencies()
     .filter(component => !isString(component))
@@ -64,10 +64,6 @@ Component.prototype.flattenTree = function (visited = new Set()) {
 
 Component.prototype.compose = function () {
   const components = this.flattenTree();
-
-  components.forEach((component) => {
-    component.validateProperties();
-  });
 
   const resources = components
     .map(component => component.getResources())
