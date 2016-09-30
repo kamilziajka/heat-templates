@@ -1,6 +1,5 @@
 'use strict';
 
-import Schema from 'schema-js';
 import Component from './component';
 import FloatingIP from './floating-ip';
 
@@ -36,12 +35,7 @@ Port.prototype.getSchema = function () {
       type: String,
       required: true
     },
-    securityGroups: {
-      type: Array,
-      items: {
-        type: String
-      }
-    }
+    securityGroups: [String]
   };
 };
 

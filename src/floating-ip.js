@@ -1,7 +1,7 @@
 'use strict';
 
-import Schema from 'schema-js';
 import Component from './component';
+import Network from './network';
 import Port from './port';
 
 const FloatingIP = function (properties) {
@@ -25,7 +25,7 @@ FloatingIP.prototype.getDependencies = function () {
 FloatingIP.prototype.getSchema = function () {
   return {
     network: {
-      type: String,
+      type: [String, Network],
       required: true
     },
     port: {
@@ -41,7 +41,7 @@ FloatingIP.prototype.getResources = function () {
   const resource = {
     type: 'OS::Neutron::FloatingIP',
     properties: {
-      floating_network: network,
+      floating_network: Component.resolve(network),
       port_id: Component.resolve(port)
     }
   };

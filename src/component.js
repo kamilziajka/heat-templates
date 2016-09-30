@@ -52,6 +52,7 @@ Component.prototype.flattenTree = function (visited = new Set()) {
   }
 
   visited.add(uid);
+  this.validateProperties();
 
   const components = this.getDependencies()
     .filter(component => !isString(component))
@@ -63,10 +64,6 @@ Component.prototype.flattenTree = function (visited = new Set()) {
 
 Component.prototype.compose = function () {
   const components = this.flattenTree();
-
-  components.forEach((component) => {
-    component.validateProperties();
-  });
 
   const resources = components
     .map(component => component.getResources())

@@ -15,9 +15,7 @@ Volume.prototype.constructor = Volume;
 
 Volume.prototype.getSchema = function () {
   return {
-    name: {
-      type: String
-    },
+    name: String,
     size: {
       type: Number,
       required: true

@@ -134,9 +134,68 @@ resources:
       floating_network: foo-public-network
 ```
 
+### Networks
+
+Network and subnetwork connected to the external network through the router and its interface
+
+```js
+const {Template, Network, Subnetwork, Router, RouterInterface} = require('heat-templates');
+
+const network = Network({id: 'test-net'});
+
+const subnetwork = Subnetwork({
+  id: 'test-subnet',
+  cidr: '10.0.0.0/24',
+  dns: ['8.8.8.8'],
+  network
+});
+
+const router = Router({
+  id: 'test-router',
+  network: 'ext-net'
+});
+
+const routerInterface = RouterInterface({
+  id: 'test-router-interface',
+  subnetwork,
+  router
+});
+
+Template().add(routerInterface).printYAML();
+```
+
+Output
+
+```yaml
+heat_template_version: '2015-04-30'
+resources:
+  test-router-interface:
+    type: 'OS::Neutron::RouterInterface'
+    properties:
+      subnet:
+        get_resource: test-subnet
+      router:
+        get_resource: test-router
+  test-subnet:
+    type: 'OS::Neutron::Subnet'
+    properties:
+      network:
+        get_resource: test-net
+      cidr: 10.0.0.0/24
+      dns_nameservers:
+        - 8.8.8.8
+  test-net:
+    type: 'OS::Neutron::Net'
+  test-router:
+    type: 'OS::Neutron::Router'
+    properties:
+      external_gateway_info:
+        network: ext-net
+```
+
 ## Components
 
-The currently available components are [Server](src/server.js), [Volume](src/volume.js), [VolumeAttachment](src/volume-attachment.js), [Port](src/port.js) and [FloatingIP](src/floating-ip.js).
+The currently available components are [Server](src/server.js), [Volume](src/volume.js), [VolumeAttachment](src/volume-attachment.js), [Network](src/network.js), [Subnetwork](src/subnetwork.js), [Port](src/port.js), [FloatingIP](src/floating-ip.js), [Router](src/router.js) and [RouterInterface](src/router-interface.js).
 
 All components inherit from base [Component](src/component.js) and their constructors take properties map object as the first argument. Parameter schemas can be found in their _getSchema_ methods.
   
