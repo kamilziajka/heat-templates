@@ -35,7 +35,10 @@ Subnetwork.prototype.getSchema = function () {
       required: true
     },
     name: String,
-    dns: [String]
+    dns: {
+      type: Array,
+      items: String
+    }
   };
 };
 

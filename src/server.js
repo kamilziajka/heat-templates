@@ -62,7 +62,10 @@ Server.prototype.getSchema = function () {
     keyPair: {
       type: String
     },
-    ports: [String, Port]
+    ports: {
+      type: Array,
+      items: [String, Port]
+    }
   };
 };
 

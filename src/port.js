@@ -35,7 +35,10 @@ Port.prototype.getSchema = function () {
       type: String,
       required: true
     },
-    securityGroups: [String]
+    securityGroups: {
+      type: Array,
+      items: String
+    }
   };
 };
 
