@@ -1,13 +1,14 @@
 'use strict';
 
 import Schema from 'schema-js';
+import dashify from 'dashify';
 import {getPrototypeChain} from './util';
 
 const Component = function (properties) {
   const uid = [
-    'component',
-    Date.now().toString(16),
-    Math.random().toString(16).substr(2, 6)
+    dashify(this.constructor.name),
+    Date.now().toString(16).slice(-4),
+    Math.random().toString(16).substr(2, 4)
   ].join('-');
 
   Object.assign(this, {
