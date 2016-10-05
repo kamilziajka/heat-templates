@@ -18,7 +18,6 @@ Input file *template.js*
 const {Template, Server} = require('heat-templates');
 
 const server = Server({
-  id: 'foo-server',
   image: 'ubuntu',
   flavor: 'm1.small'
 });
@@ -37,10 +36,9 @@ Output
 ```yaml
 heat_template_version: '2015-04-30'
 resources:
-  foo-server:
+  server-b0df-8402:
     type: 'OS::Nova::Server'
     properties:
-      name: foo-server
       flavor: m1.small
       image: ubuntu
 ```
@@ -195,13 +193,22 @@ resources:
 
 ## Components
 
-The currently available components are [Server](src/server.js), [Volume](src/volume.js), [VolumeAttachment](src/volume-attachment.js), [Network](src/network.js), [Subnetwork](src/subnetwork.js), [Port](src/port.js), [FloatingIP](src/floating-ip.js), [Router](src/router.js) and [RouterInterface](src/router-interface.js).
+The currently available components are [Server](src/server.js), [Volume](src/volume.js), [VolumeAttachment](src/volume-attachment.js), [Network](src/network.js), [Subnetwork](src/subnetwork.js), [Port](src/port.js), [FloatingIP](src/floating-ip.js), [Router](src/router.js), [RouterInterface](src/router-interface.js) and [SecurityGroup](src/security-group.js).
 
 All components inherit from base [Component](src/component.js) and their constructors take properties map object as the first argument. Parameter schemas can be found in their _getSchema_ methods.
   
 Already existing resources can be referenced using strings with their OpenStack IDs.
   
 Library works even on [node](https://nodejs.org) 0.8 but requires ES6 _Object.assign_ and _Set_ polyfills.
+
+## Launching stacks
+
+One of the ways to launch a stack is to use an OpenStack client (python-openstackclient===2.3.0 from pip) 
+
+```sh
+$ node template.js > template.yaml
+$ openstack stack create -t template.yaml test-stack
+```
 
 ## License
 [MIT](license.md)
