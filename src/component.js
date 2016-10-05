@@ -1,15 +1,23 @@
 'use strict';
 
 import Schema from 'schema-js';
-import {getPrototypeChain, isString} from './util';
+import dashify from 'dashify';
+import {getPrototypeChain} from './util';
 
 const Component = function (properties) {
-  const uid = `${Math.random().toString(36).substr(2, 5)}-${Date.now()}`;
+  const uid = [
+    dashify(this.constructor.name),
+    Date.now().toString(16).slice(-4),
+    Math.random().toString(16).substr(2, 4)
+  ].join('-');
 
   Object.assign(this, {
     dependencies: [],
     uid,
-    properties
+    properties: {
+      id: uid,
+      ...properties
+    }
   });
 };
 
@@ -55,7 +63,7 @@ Component.prototype.flattenTree = function (visited = new Set()) {
   this.validateProperties();
 
   const components = this.getDependencies()
-    .filter(component => !isString(component))
+    .filter(component => component instanceof Component)
     .map(component => component.flattenTree(visited))
     .reduce((current, next) => [...current, ...next], []);
 
@@ -73,9 +81,9 @@ Component.prototype.compose = function () {
 };
 
 Component.resolve = function (component) {
-  return isString(component) ? component : {
-    get_resource: component.properties.id
-  };
+  return component instanceof Component ?
+    {get_resource: component.properties.id} :
+    component
 };
 
 export default Component;

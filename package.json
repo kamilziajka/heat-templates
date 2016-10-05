@@ -1,15 +1,18 @@
 {
   "name": "heat-templates",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "heat-templates",
   "main": "lib/index.js",
   "author": "kazet",
   "license": "MIT",
   "engines": {
-    "node" : ">=0.8"
+    "node": ">=0.8"
   },
   "keywords": [
-    "openstack", "heat", "templates", "yaml"
+    "openstack",
+    "heat",
+    "templates",
+    "yaml"
   ],
   "scripts": {
     "build": "babel src -d ./lib",
@@ -24,6 +27,7 @@
     "rimraf": "2.5.4"
   },
   "dependencies": {
+    "dashify": "0.2.2",
     "js-yaml": "3.6.1",
     "schema-js": "1.1.0"
   },

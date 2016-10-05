@@ -1,7 +1,10 @@
 'use strict';
 
 import Component from './component';
+import Network from './network';
+import Subnetwork from './subnetwork';
 import FloatingIP from './floating-ip';
+import SecurityGroup from './security-group';
 
 const Port = function (properties) {
   if (!(this instanceof Port)) {
@@ -25,19 +28,26 @@ Port.prototype.attachFloatingIP = function (floatingIP) {
   return this;
 };
 
+Port.prototype.getDependencies = function () {
+  return [
+    ...this.dependencies,
+    ...this.properties.securityGroups
+  ];
+};
+
 Port.prototype.getSchema = function () {
   return {
     network: {
-      type: String,
+      type: [String, Network],
       required: true
     },
     subnetwork: {
-      type: String,
+      type: [String, Subnetwork],
       required: true
     },
     securityGroups: {
       type: Array,
-      items: String
+      items: [String, SecurityGroup]
     }
   };
 };
@@ -52,7 +62,9 @@ Port.prototype.getResources = function () {
 
   Object.assign(
     properties,
-    securityGroups.length ? {security_groups: securityGroups} : {}
+    securityGroups.length ? {
+      security_groups: securityGroups.map(group => Component.resolve(group))
+    } : {}
   );
 
   return {
