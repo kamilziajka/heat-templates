@@ -75,18 +75,18 @@ Server.prototype.getResources = function () {
     keyPair, image, ports
   } = this.properties;
 
-  const properties = {
-    name: name || id,
-    flavor,
-    image
-  };
-
   const networks = ports.map(port => ({
     port: Component.resolve(port)
   }));
 
+  const properties = {
+    flavor,
+    image
+  };
+
   Object.assign(
     properties,
+    name ? {name} : {},
     zone ? {zone} : {},
     keyPair ? {key_name: keyPair} : {},
     networks.length ? {networks} : {}

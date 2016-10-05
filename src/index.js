@@ -6,6 +6,7 @@ import Network from './network';
 import Port from './port';
 import Router from './router';
 import RouterInterface from './router-interface';
+import SecurityGroup from './security-group';
 import Server from './server';
 import Subnetwork from './subnetwork';
 import Template from './template';
@@ -19,6 +20,7 @@ export {
   Port,
   Router,
   RouterInterface,
+  SecurityGroup,
   Server,
   Subnetwork,
   Template,
