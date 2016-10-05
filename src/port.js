@@ -1,6 +1,8 @@
 'use strict';
 
 import Component from './component';
+import Network from './network';
+import Subnetwork from './subnetwork';
 import FloatingIP from './floating-ip';
 
 const Port = function (properties) {
@@ -28,11 +30,11 @@ Port.prototype.attachFloatingIP = function (floatingIP) {
 Port.prototype.getSchema = function () {
   return {
     network: {
-      type: String,
+      type: [String, Network],
       required: true
     },
     subnetwork: {
-      type: String,
+      type: [String, Subnetwork],
       required: true
     },
     securityGroups: {
