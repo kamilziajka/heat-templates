@@ -31,6 +31,8 @@ Port.prototype.attachFloatingIP = function (floatingIP) {
 Port.prototype.getDependencies = function () {
   return [
     ...this.dependencies,
+    this.properties.network,
+    this.properties.subnetwork,
     ...this.properties.securityGroups
   ];
 };
@@ -56,8 +58,8 @@ Port.prototype.getResources = function () {
   const {id, network, subnetwork, securityGroups} = this.properties;
 
   const properties = {
-    network,
-    fixed_ips: [{subnet: subnetwork}]
+    network: Component.resolve(network),
+    fixed_ips: [{subnet: Component.resolve(subnetwork)}]
   };
 
   Object.assign(
