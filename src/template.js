@@ -1,6 +1,7 @@
 'use strict';
 
 import Yaml from 'js-yaml';
+import Component from './component';
 
 const Template = function (...args) {
   if (!(this instanceof Template)) {
@@ -15,7 +16,19 @@ const Template = function (...args) {
 };
 
 Template.prototype.add = function (...args) {
-  this.components.push(...args);
+  const getValues = (obj) => Object.keys(obj).map(key => obj[key]);
+
+  const flatten = (obj) => {
+    const components = Array.isArray(obj) ? obj : getValues(obj);
+
+    return components
+      .map(component => (component instanceof Component) ? component : flatten(component))
+      .reduce((current, next) => [...current, ...[].concat(next)], [])
+      .filter(component => (component instanceof Component));
+  };
+
+  this.components.push(...flatten(args));
+
   return this;
 };
 
